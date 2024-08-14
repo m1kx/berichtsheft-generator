@@ -37,7 +37,7 @@ const run = async () => {
 
   const existingDateRangeIndex = worksheet.getRows(0, worksheet.rowCount + 1)?.findIndex(row => row.getCell(1).value === formattedDateRange) || -1;
 
-  const pullRequestsThisWeek = await getAllPullRequestsFromUserInTimeRange(weekStart, weekEnd, "mika.rottlaender");
+  const pullRequestsThisWeek = await getAllPullRequestsFromUserInTimeRange(weekStart, weekEnd);
 
   const formattedPullRequestTexts: string[] = [];
   pullRequestsThisWeek.forEach(pr => {

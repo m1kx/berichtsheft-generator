@@ -9,8 +9,8 @@ const getPullRequestsUrl = () => {
   return `${config.base_url}/projects/${config.project}/repos/${config.repo}/pull-requests?state=ALL&limit=500`;
 }
 
-export const getAllPullRequestsFromUserInTimeRange = async (start: Date, end: Date, username: string): Promise<PullRequest[]> => {
-  const allPullRequestsFromUser = getAllPullRequestsFromUser(username);
+export const getAllPullRequestsFromUserInTimeRange = async (start: Date, end: Date): Promise<PullRequest[]> => {
+  const allPullRequestsFromUser = getAllPullRequestsFromUser(config.username);
   return (await allPullRequestsFromUser).filter(pr => isPullRequestInTimeRange(start, end, pr));
 }
 
