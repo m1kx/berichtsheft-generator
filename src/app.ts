@@ -47,7 +47,7 @@ const run = async () => {
 
   const formattedDateRange = formatDateRange(answer.from, answer.to);
 
-  const existingDateRangeIndex = worksheet.getRows(0, worksheet.rowCount + 1)?.findIndex(row => row.getCell(1).value === formattedDateRange) || -1;
+  const existingDateRangeIndex = worksheet.getRows(0, worksheet.rowCount + 1)?.findIndex(row => row.getCell(1).value?.toString().split('bis')[0] === formattedDateRange.split('bis')[0]) || -1;
 
   const pullRequestsThisWeek = await getAllPullRequestsFromUserInTimeRange(answer.from, answer.to);
 
