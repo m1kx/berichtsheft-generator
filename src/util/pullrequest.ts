@@ -1,6 +1,5 @@
 import type { PullRequest } from "../types/bitbucket";
-
-const dayNames = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+import { dayNames } from "./date";
 
 export const stateTranslations = {
   OPEN: 'Offen',

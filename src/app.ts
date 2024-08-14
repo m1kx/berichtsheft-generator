@@ -4,7 +4,8 @@ import { setupHeadline } from './util/headline';
 import { createDefaultSheet, addWeeklyRow } from './util/sheet';
 import { getAllPullRequestsFromUserInTimeRange } from './util/bitbucket';
 import { formatPullRequest } from './util/pullrequest';
-import { formatDateRange } from './util/date';
+import { dayNames, formatDateRange, getCurrentWeek, getLastWeeks } from './util/date';
+import { select } from '@inquirer/prompts';
 
 let worksheet: Worksheet;
 let workbookName: string;
@@ -26,25 +27,42 @@ const run = async () => {
     worksheet = dataSheet;
   }
 
+  const lastWeeks = getLastWeeks(5);
 
-  const weekStart = new Date();
-  weekStart.setDate(weekStart.getDate() - weekStart.getDay())
+  const answer = await select({
+    message: 'Welches Datum soll verwendet werden?',
+    choices: [{
+      name: 'Aktuelle Woche',
+      value: getCurrentWeek(),
+    }].concat(lastWeeks.map(week => {
+      return {
+        name: formatDateRange(week.from, week.to, true),
+        value: week
+      }
+    }))
+  })
 
-  const weekEnd = new Date();
-  weekEnd.setDate(weekStart.getDate() + (7 - weekStart.getDay()))
-
-  const formattedDateRange = formatDateRange(weekStart, weekEnd);
+  const formattedDateRange = formatDateRange(answer.from, answer.to);
 
   const existingDateRangeIndex = worksheet.getRows(0, worksheet.rowCount + 1)?.findIndex(row => row.getCell(1).value === formattedDateRange) || -1;
 
-  const pullRequestsThisWeek = await getAllPullRequestsFromUserInTimeRange(weekStart, weekEnd);
+  const pullRequestsThisWeek = await getAllPullRequestsFromUserInTimeRange(answer.from, answer.to);
 
   const formattedPullRequestTexts: string[] = [];
   pullRequestsThisWeek.forEach(pr => {
     formattedPullRequestTexts.push(formatPullRequest(pr));
   });
 
-  formattedPullRequestTexts.reverse();
+  formattedPullRequestTexts.sort((a: string, b: string) => {
+    const dayStringA = a.split('[')[1]!.split(']')[0];
+    const dayIndexA = dayNames.findIndex(day => day === dayStringA);
+    const dayStringB = b.split('[')[1]!.split(']')[0];
+    const dayIndexB = dayNames.findIndex(day => day === dayStringB);
+    return dayIndexA < dayIndexB ? -1 : 1;
+  });
+
+  console.log('Folgende Einträge wurden in Excel hinzugefügt:');
+  console.log(formattedPullRequestTexts);
 
   addWeeklyRow(worksheet, formattedDateRange, formattedPullRequestTexts.join('\n'), existingDateRangeIndex);
 
@@ -53,22 +71,3 @@ const run = async () => {
 }
 
 run();
-
-/*workbook.creator = 'script';
-workbook.modified = new Date();
-
-const sheet = createDefaultSheet(workbook);
-
-setupHeadline(sheet);
-
-const row: RowEntry = {
-  week: new Date(),
-  activity: 'Pull Request...\n2. Pull Request...',
-  other: 'Andere aktivitäten'
-}
-
-const addedRow = sheet.addRow(row)
-addedRow.height = 60;
-addedRow.commit();
-
-saveWorkbook(workbook, getWorkBookName())*/

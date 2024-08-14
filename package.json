@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@inquirer/prompts": "^5.3.8",
     "@types/exceljs": "^0.5.3",
     "exceljs": "^4.4.0",
     "fs": "^0.0.1-security",
