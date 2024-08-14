@@ -1,0 +1,7 @@
+{
+  "username": "vorname.nachname",
+  "base_url": "https://bitbucket.check24.de/rest/api/latest",
+  "bitbucket_token": "token",
+  "project": "projektname",
+  "repo": "repo"
+}

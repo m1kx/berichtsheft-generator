@@ -1,0 +1,27 @@
+{
+  "name": "ausbildung",
+  "version": "1.0.0",
+  "main": "src/app.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx tsx src/app.ts",
+    "rm": "rm ./*.xlsx"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/exceljs": "^0.5.3",
+    "exceljs": "^4.4.0",
+    "fs": "^0.0.1-security",
+    "inquirer": "^10.1.8",
+    "node-fetch": "^3.3.2",
+    "tslib": "^2.6.3"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "tsx": "^4.17.0",
+    "typescript": "^5.5.4"
+  }
+}
