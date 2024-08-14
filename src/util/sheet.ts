@@ -22,7 +22,7 @@ export const addWeeklyRow = (worksheet: Worksheet, timeRange: string, activity: 
     worksheet.spliceRows(existingDateRangeIndex, 1);
     addedRow = worksheet.insertRow(existingDateRangeIndex, rowValue);
   }
-  addedRow.height = 80;
+  addedRow.height = Math.max(activity.split('\n').length * 13, timeRange.split('\n').length * 13);
   addedRow.alignment = {
     vertical: 'top',
     wrapText: true,
