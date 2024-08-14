@@ -41,7 +41,6 @@ export const getLastWeeks = (amount: number): Week[] => {
   const currentWeekStartDate = new Date();
   currentWeekStartDate.setDate(now.getDate() - (now.getDay() - 1) - 7);
   currentWeekStartDate.setHours(0, 0, 0, 0);
-  console.log(currentWeekStartDate)
 
   for (let i = 0; i < amount; i++) {
     const from = new Date();
