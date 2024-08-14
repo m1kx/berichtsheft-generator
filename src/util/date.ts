@@ -24,6 +24,16 @@ export const getCurrentWeek = (): Week => {
   }
 }
 
+export const getTodaysDate = (): Week => {
+  const from = new Date();
+  from.setHours(0, 0, 0, 0);
+  const to = new Date();
+  return {
+    from,
+    to,
+  }
+}
+
 export const getLastWeeks = (amount: number): Week[] => {
   const lastWeeks = [];
 

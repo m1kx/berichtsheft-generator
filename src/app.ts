@@ -4,7 +4,7 @@ import { setupHeadline } from './util/headline';
 import { createDefaultSheet, addWeeklyRow } from './util/sheet';
 import { getAllPullRequestsFromUserInTimeRange } from './util/bitbucket';
 import { formatPullRequest } from './util/pullrequest';
-import { dayNames, formatDateRange, getCurrentWeek, getLastWeeks } from './util/date';
+import { dayNames, formatDateRange, getCurrentWeek, getLastWeeks, getTodaysDate } from './util/date';
 import { select } from '@inquirer/prompts';
 
 let worksheet: Worksheet;
@@ -34,6 +34,9 @@ const run = async () => {
     choices: [{
       name: 'Aktuelle Woche',
       value: getCurrentWeek(),
+    }, {
+      name: 'Nur heutiges Datum',
+      value: getTodaysDate(),
     }].concat(lastWeeks.map(week => {
       return {
         name: formatDateRange(week.from, week.to, true),
