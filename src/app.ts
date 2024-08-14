@@ -15,7 +15,7 @@ const run = async () => {
   const workbook = new Workbook();
   try {
     await workbook.xlsx.readFile(workbookName);
-  } catch (e) {
+  } catch {
     workbook.creator = 'script';
   }
 

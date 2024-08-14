@@ -14,7 +14,7 @@ export const createDefaultSheet = (workbook: Workbook): Worksheet => {
 }
 
 export const addWeeklyRow = (worksheet: Worksheet, timeRange: string, activity: string, existingDateRangeIndex: number, other?: string) => {
-  const rowValue = [timeRange,activity,other];
+  const rowValue = [timeRange, activity, other];
   let addedRow: Row;
   if (existingDateRangeIndex === -1) {
     addedRow = worksheet.addRow(rowValue);

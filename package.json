@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "src/app.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx tsx src/app.ts",
-    "rm": "rm ./*.xlsx"
+    "rm": "rm ./*.xlsx",
+    "lint": "npx eslint src"
   },
   "keywords": [],
   "author": "",
@@ -21,8 +21,12 @@
     "tslib": "^2.6.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "eslint": "^9.9.0",
+    "globals": "^15.9.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.17.0",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.1.0"
   }
 }
