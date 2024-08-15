@@ -4,7 +4,7 @@ import { dayNames } from "./date";
 export const stateTranslations = {
   OPEN: 'Offen',
   DECLINED: 'Abgelehnt',
-  MERGED: 'Angenommen',
+  MERGED: 'Merged',
 }
 
 export const formatPullRequest = (pr: PullRequest): string => {
