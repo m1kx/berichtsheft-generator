@@ -4,4 +4,8 @@ export interface Config {
   bitbucket_token: string;
   project: string;
   repo: string;
+  jira: string;
+  jira_base_url: string;
+  ollama_prompt: string;
+  ollama_endpoint: string;
 }

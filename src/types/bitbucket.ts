@@ -6,6 +6,11 @@ export interface PullRequestsResponse {
   start: number
 }
 
+export interface PullRequestActivity {
+  aiDescription: string
+  title: string
+}
+
 export interface PullRequest {
   id: number
   version: number

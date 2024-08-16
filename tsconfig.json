@@ -9,7 +9,6 @@
       "./node_modules/@types",
     ],
     "types": ["node"],
-    "target": "ESNext",
     "experimentalDecorators": true,
     "useDefineForClassFields": true,
     "allowSyntheticDefaultImports": true,
@@ -21,7 +20,10 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "target": "ESNext",
   },
   "ts-node": {
     "esm": true,

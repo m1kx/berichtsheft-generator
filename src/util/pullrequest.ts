@@ -9,7 +9,7 @@ export const stateTranslations = {
 
 export const formatPullRequest = (pr: PullRequest): string => {
   const createdAt = new Date(pr.createdDate);
-  return `[${dayNames[createdAt.getDay()]}][status=${stateTranslations[pr.state]}]: ${pr.title.replace(/(\r\n|\n|\r)/gm, "")}`;
+  return `[${dayNames[createdAt.getDay()]}]: ${pr.fromRef.displayId.replace(/(\r\n|\n|\r)/gm, "")}`;
 }
 
 export const isPullRequestInTimeRange = (start: Date, end: Date, pr: PullRequest) => {
