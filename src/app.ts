@@ -3,20 +3,80 @@ import { getWorkBookName, saveWorkbook } from './util/workbook.js';
 import { setupHeadline } from './util/headline.js';
 import { createDefaultSheet, addWeeklyRow } from './util/sheet.js';
 import { getAllPullRequestsFromUserInTimeRange } from './util/bitbucket.js';
-import { formatPullRequest } from './util/pullrequest.js';
+import { formatPullRequest, isMergeInTimeRange, isPullRequestInTimeRange } from './util/pullrequest.js';
 import { dayNames, formatDateRange, getCurrentWeek, getLastWeeks, getTodaysDate } from './util/date';
 import { select } from '@inquirer/prompts';
 import { getTicketActivity } from './util/ollama';
-import type { PullRequestActivity } from './types/bitbucket';
+import type { PullRequest, PullRequestActivity } from './types/bitbucket';
+import { getTicketHeading } from './util/jira.js';
+import { loadConfig } from './util/config.js';
 
 let worksheet: Worksheet;
 let workbookName: string;
 
+const config = loadConfig();
+
 const run = async () => {
+  const lastWeeks = getLastWeeks(5);
 
-  //const ticketActivity = getTicketActivity();
+  const forBerichtsheft = await select({
+    message: 'Wofür soll dieses script verwendet werden?',
+    choices: [{
+      name: 'Berichtsheft',
+      value: true
+    }, {
+      name: 'Checkout Message',
+      value: false
+    }]
+  })
 
-  //console.log(`Aktivität:\n${activity}`)
+  const answer = forBerichtsheft ? await select({
+    message: 'Welches Datum soll verwendet werden?',
+    choices: [{
+      name: 'Aktuelle Woche',
+      value: getCurrentWeek(),
+    }, {
+      name: 'Nur heutiges Datum',
+      value: getTodaysDate(),
+    }].concat(lastWeeks.map(week => {
+      return {
+        name: formatDateRange(week.from, week.to, true),
+        value: week
+      }
+    }))
+  }) : {
+    from: new Date('1970-01-01'),
+    to: new Date()
+  }
+
+  const formattedDateRange = formatDateRange(answer.from, answer.to);
+
+  const pullRequestsInTimeFrame: PullRequest[] = [];
+  for (const repo of config.repos) {
+    const prs = await getAllPullRequestsFromUserInTimeRange(answer.from, answer.to, repo);
+    pullRequestsInTimeFrame.push(...prs);
+  }
+
+  if (!forBerichtsheft) {
+    const today = getTodaysDate();
+    const mergesToday = pullRequestsInTimeFrame.filter(pr => pr.closed && pr.state === 'MERGED' && pr.closedDate && isMergeInTimeRange(today.from, today.to, pr));
+    let message = '';
+    for (const merge of mergesToday) {
+      const ticketId = merge.fromRef.displayId.split('/')[merge.fromRef.displayId.split('/').length - 1]!.split('-').slice(0, 2).join('-');
+      const ticketHeading = await getTicketHeading(ticketId)
+      message += ` - ${ticketId}: ${ticketHeading} :merge:\n`;
+    }
+
+    const prsToday = pullRequestsInTimeFrame.filter(pr => isPullRequestInTimeRange(today.from, today.to, pr))
+    for (const pr of prsToday) {
+      const ticketId = pr.fromRef.displayId.split('/')[pr.fromRef.displayId.split('/').length - 1]!.split('-').slice(0, 2).join('-');
+      const ticketHeading = await getTicketHeading(ticketId)
+      message += ` - ${ticketId}: ${ticketHeading} :pullrequest:\n`;
+    }
+
+    console.log(message)
+    return;
+  }
 
   workbookName = getWorkBookName();
   const workbook = new Workbook();
@@ -33,36 +93,12 @@ const run = async () => {
   } else {
     worksheet = dataSheet;
   }
-
-  const lastWeeks = getLastWeeks(5);
-
-  const answer = await select({
-    message: 'Welches Datum soll verwendet werden?',
-    choices: [{
-      name: 'Aktuelle Woche',
-      value: getCurrentWeek(),
-    }, {
-      name: 'Nur heutiges Datum',
-      value: getTodaysDate(),
-    }].concat(lastWeeks.map(week => {
-      return {
-        name: formatDateRange(week.from, week.to, true),
-        value: week
-      }
-    }))
-  })
-
-  const formattedDateRange = formatDateRange(answer.from, answer.to);
-
   const existingDateRangeIndex = worksheet.getRows(0, worksheet.rowCount + 1)?.findIndex(row => row.getCell(1).value?.toString().split('bis')[0] === formattedDateRange.split('bis')[0]) || -1;
 
-  const pullRequestsThisWeek = await getAllPullRequestsFromUserInTimeRange(answer.from, answer.to);
-
   const pullRequestWithActivity: PullRequestActivity[] = [];
-  for (const pr of pullRequestsThisWeek) {
-    const ticketId = pr.fromRef.displayId.split('-').slice(0,2).join('-');
-    console.log(ticketId)
-    const ticketActivity = await getTicketActivity(ticketId); 
+  for (const pr of pullRequestsInTimeFrame) {
+    const ticketId = pr.fromRef.displayId.split('-').slice(0, 2).join('-');
+    const ticketActivity = await getTicketActivity(ticketId);
     pullRequestWithActivity.push({
       title: formatPullRequest(pr),
       aiDescription: ticketActivity

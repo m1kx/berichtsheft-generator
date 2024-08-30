@@ -21,6 +21,7 @@ export interface PullRequest {
   closed: boolean
   createdDate: number
   updatedDate: number
+  closedDate?: number
   fromRef: FromRef
   toRef: ToRef
   locked: boolean

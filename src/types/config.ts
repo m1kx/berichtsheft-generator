@@ -3,7 +3,7 @@ export interface Config {
   base_url: string;
   bitbucket_token: string;
   project: string;
-  repo: string;
+  repos: string[];
   jira: string;
   jira_base_url: string;
   ollama_prompt: string;
