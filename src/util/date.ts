@@ -44,6 +44,7 @@ export const getLastWeeks = (amount: number): Week[] => {
 
   for (let i = 0; i < amount; i++) {
     const from = new Date();
+    from.setMonth(currentWeekStartDate.getMonth());
     from.setDate(currentWeekStartDate.getDate() - 7 * i);
     from.setHours(0, 0, 0, 0);
     const to = new Date();
