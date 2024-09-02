@@ -3,7 +3,7 @@
   "base_url": "https://bitbucket.check24.de/rest/api/latest",
   "bitbucket_token": "token",
   "project": "projektname",
-  "repo": ["repo1", "repo2"],
+  "repos": ["repo1", "repo2"],
   "jira": "jira token",
   "jira_base_url": "jira url",
   "ollama_prompt": "Nutze die folgende Beschreibung eines Tickets um in ein bis zwei Sätzen eine kurze Zusammenfassung der Aktivität nach Abschluss des Tickets zu generieren. Gib mir nur die generierten Sätze zurück, sonst nichts!:\n{DESCRIPTION}",
