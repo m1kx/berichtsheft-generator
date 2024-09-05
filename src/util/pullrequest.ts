@@ -17,7 +17,7 @@ export const isPullRequestInTimeRange = (start: Date, end: Date, pr: PullRequest
   return createdAt > start && createdAt < end;
 }
 
-export const isMergeInTimeRange = (start: Date, end: Date, pr: PullRequest) => {
-  const createdAt = new Date(pr.updatedDate);
-  return createdAt > start && createdAt < end;
+export const isPullRequestUpdateInTimeRange = (start: Date, end: Date, pr: PullRequest) => {
+  const updatedAt = new Date(pr.updatedDate);
+  return updatedAt > start && updatedAt < end;
 }

@@ -3,7 +3,7 @@ import { getWorkBookName, saveWorkbook } from './util/workbook.js';
 import { setupHeadline } from './util/headline.js';
 import { createDefaultSheet, addWeeklyRow } from './util/sheet.js';
 import { getAllPullRequestsFromUserInTimeRange } from './util/bitbucket.js';
-import { formatPullRequest, isMergeInTimeRange, isPullRequestInTimeRange } from './util/pullrequest.js';
+import { formatPullRequest, isPullRequestInTimeRange, isPullRequestUpdateInTimeRange } from './util/pullrequest.js';
 import { dayNames, formatDateRange, getCurrentWeek, getLastWeeks, getTodaysDate } from './util/date';
 import { select } from '@inquirer/prompts';
 import { getTicketActivity } from './util/ollama';
@@ -59,7 +59,11 @@ const run = async () => {
 
   if (!forBerichtsheft) {
     const today = getTodaysDate();
-    const mergesToday = pullRequestsInTimeFrame.filter(pr => pr.closed && pr.state === 'MERGED' && pr.closedDate && isMergeInTimeRange(today.from, today.to, pr));
+
+    console.log(pullRequestsInTimeFrame.filter(pr => pr.title.includes('change s3 map logic')))
+
+    console.log(pullRequestsInTimeFrame.length)
+    const mergesToday = pullRequestsInTimeFrame.filter(pr => pr.closed && pr.state === 'MERGED' && pr.closedDate && isPullRequestUpdateInTimeRange(today.from, today.to, pr));
     let message = '';
     for (const merge of mergesToday) {
       const ticketId = merge.fromRef.displayId.split('/')[merge.fromRef.displayId.split('/').length - 1]!.split('-').slice(0, 2).join('-');
@@ -67,11 +71,21 @@ const run = async () => {
       message += ` - ${ticketId}: ${ticketHeading} :merge:\n`;
     }
 
-    const prsToday = pullRequestsInTimeFrame.filter(pr => isPullRequestInTimeRange(today.from, today.to, pr))
+    const prsToday = pullRequestsInTimeFrame.filter(pr => pr.state === 'OPEN' && isPullRequestInTimeRange(today.from, today.to, pr))
     for (const pr of prsToday) {
       const ticketId = pr.fromRef.displayId.split('/')[pr.fromRef.displayId.split('/').length - 1]!.split('-').slice(0, 2).join('-');
       const ticketHeading = await getTicketHeading(ticketId)
       message += ` - ${ticketId}: ${ticketHeading} :pullrequest:\n`;
+    }
+
+    const prUpdatesToday = pullRequestsInTimeFrame.filter(pr => pr.state === 'OPEN' && isPullRequestUpdateInTimeRange(today.from, today.to, pr));
+    for (const pr of prUpdatesToday) {
+      if (prsToday.find(prT => prT.id === pr.id)) {
+        continue;
+      }
+      const ticketId = pr.fromRef.displayId.split('/')[pr.fromRef.displayId.split('/').length - 1]!.split('-').slice(0, 2).join('-');
+      const ticketHeading = await getTicketHeading(ticketId)
+      message += ` - ${ticketId}: ${ticketHeading} :pullrequest: :building_construction:\n`;
     }
 
     console.log(message)
