@@ -61,21 +61,26 @@ const run = async () => {
     const today = getTodaysDate();
 
     const mergesToday = pullRequestsInTimeFrame.filter(pr => pr.closed && pr.state === 'MERGED' && pr.closedDate && isPullRequestUpdateInTimeRange(today.from, today.to, pr));
-    let message = '';
-    for (const merge of mergesToday) {
-      const ticketId = merge.fromRef.displayId.split('/')[merge.fromRef.displayId.split('/').length - 1]!.split('-').slice(0, 2).join('-');
-      const ticketHeading = await getTicketHeading(ticketId)
-      message += ` - ${ticketId}: ${ticketHeading} :merge:\n`;
-    }
-
     const prsToday = pullRequestsInTimeFrame.filter(pr => pr.state === 'OPEN' && isPullRequestInTimeRange(today.from, today.to, pr))
+    const prUpdatesToday = pullRequestsInTimeFrame.filter(pr => pr.state === 'OPEN' && isPullRequestUpdateInTimeRange(today.from, today.to, pr));
+
+    let message = '';
+    
     for (const pr of prsToday) {
+      if (mergesToday.find(merge => merge.id === pr.id)) {
+        continue;
+      }
       const ticketId = pr.fromRef.displayId.split('/')[pr.fromRef.displayId.split('/').length - 1]!.split('-').slice(0, 2).join('-');
       const ticketHeading = await getTicketHeading(ticketId)
       message += ` - ${ticketId}: ${ticketHeading} :pullrequest:\n`;
     }
 
-    const prUpdatesToday = pullRequestsInTimeFrame.filter(pr => pr.state === 'OPEN' && isPullRequestUpdateInTimeRange(today.from, today.to, pr));
+    for (const merge of mergesToday) {
+      const ticketId = merge.fromRef.displayId.split('/')[merge.fromRef.displayId.split('/').length - 1]!.split('-').slice(0, 2).join('-');
+      const ticketHeading = await getTicketHeading(ticketId)
+      message += ` - ${ticketId}:${ticketHeading}${prsToday.find(prT => prT.id === merge.id) ? ' :pullrequest:' : ''} :merge:\n`;
+    }
+
     for (const pr of prUpdatesToday) {
       if (prsToday.find(prT => prT.id === pr.id)) {
         continue;
