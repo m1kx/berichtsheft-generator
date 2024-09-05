@@ -60,9 +60,6 @@ const run = async () => {
   if (!forBerichtsheft) {
     const today = getTodaysDate();
 
-    console.log(pullRequestsInTimeFrame.filter(pr => pr.title.includes('change s3 map logic')))
-
-    console.log(pullRequestsInTimeFrame.length)
     const mergesToday = pullRequestsInTimeFrame.filter(pr => pr.closed && pr.state === 'MERGED' && pr.closedDate && isPullRequestUpdateInTimeRange(today.from, today.to, pr));
     let message = '';
     for (const merge of mergesToday) {
@@ -126,7 +123,7 @@ const run = async () => {
     const dayIndexB = dayNames.findIndex(day => day === dayStringB);
     return dayIndexA < dayIndexB ? -1 : 1;
   });
-
+  
   addWeeklyRow(worksheet, formattedDateRange, pullRequestWithActivity.map(pr => `${pr.title}\n${pr.aiDescription}`).join('\n\n'), existingDateRangeIndex);
 
   workbook.modified = new Date();
