@@ -6,6 +6,6 @@
   "repos": ["repo1", "repo2"],
   "jira": "jira token",
   "jira_base_url": "jira url",
-  "ollama_prompt": "Nutze die folgende Beschreibung eines Tickets um in ein bis zwei Sätzen eine kurze Zusammenfassung der Aktivität nach Abschluss des Tickets zu generieren. Gib mir nur die generierten Sätze zurück, sonst nichts!:\n{DESCRIPTION}",
+  "ollama_prompt": "Nutze die folgende Beschreibung eines Tickets um in ein bis zwei Sätzen eine kurze Zusammenfassung der Aktivität nach Abschluss des Tickets zu generieren. Gib mir nur die generierten Sätze zurück, sonst nichts! achte dabei darauf dich kurz zu halten und unnötige Satzteile wie 'Nach Abschluss des Tickets' weg zu lassen:\n{DESCRIPTION}",
   "ollama_endpoint": "http://localhost:11434/api/generate"
 }
