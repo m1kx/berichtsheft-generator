@@ -2,14 +2,15 @@ import { Workbook, type Worksheet } from 'exceljs';
 import { getWorkBookName, saveWorkbook } from './util/workbook.js';
 import { setupHeadline } from './util/headline.js';
 import { createDefaultSheet, addWeeklyRow } from './util/sheet.js';
-import { getAllPullRequestsFromUserInTimeRange } from './util/bitbucket.js';
+import { getAllBranchesFromUserInTimeRange, getAllPullRequestsFromUserInTimeRange } from './util/bitbucket.js';
 import { formatPullRequest, isPullRequestInTimeRange, isPullRequestUpdateInTimeRange } from './util/pullrequest.js';
 import { dayNames, formatDateRange, getCurrentWeek, getLastWeeks, getTodaysDate } from './util/date';
 import { select } from '@inquirer/prompts';
 import { getTicketActivity } from './util/ollama';
-import type { PullRequest, PullRequestActivity } from './types/bitbucket';
+import type { Branch, PullRequest, PullRequestActivity } from './types/bitbucket';
 import { getTicketHeading } from './util/jira.js';
 import { loadConfig } from './util/config.js';
+import { isBranchUpdateInTimeRange } from './util/branch.js';
 
 let worksheet: Worksheet;
 let workbookName: string;
@@ -57,13 +58,19 @@ const run = async () => {
     pullRequestsInTimeFrame.push(...prs);
   }
 
+  const branchesInTimeFrame: Branch[] = [];
+  for (const repo of config.repos) {
+    const branches = await getAllBranchesFromUserInTimeRange(answer.from, answer.to, repo);
+    branchesInTimeFrame.push(...branches);
+  }
+
   if (!forBerichtsheft) {
     const today = getTodaysDate();
 
     const mergesToday = pullRequestsInTimeFrame.filter(pr => pr.closed && pr.state === 'MERGED' && pr.closedDate && isPullRequestUpdateInTimeRange(today.from, today.to, pr));
     const prsToday = pullRequestsInTimeFrame.filter(pr => pr.state === 'OPEN' && isPullRequestInTimeRange(today.from, today.to, pr))
     const prUpdatesToday = pullRequestsInTimeFrame.filter(pr => pr.state === 'OPEN' && isPullRequestUpdateInTimeRange(today.from, today.to, pr));
-
+    const branchesUpdatedToday = branchesInTimeFrame.filter(branch => isBranchUpdateInTimeRange(today.from, today.to, branch));
     let message = '';
     
     for (const pr of prsToday) {
@@ -88,6 +95,18 @@ const run = async () => {
       const ticketId = pr.fromRef.displayId.split('/')[pr.fromRef.displayId.split('/').length - 1]!.split('-').slice(0, 2).join('-');
       const ticketHeading = await getTicketHeading(ticketId)
       message += ` - ${ticketId}: ${ticketHeading} :pullrequest: :building_construction:\n`;
+    }
+
+    for (const branch of branchesUpdatedToday) {
+      if (branch.metadata["com.atlassian.bitbucket.server.bitbucket-ref-metadata:outgoing-pull-request-metadata"]) {
+        continue;
+      }
+      const ticketId = branch.metadata["com.atlassian.bitbucket.server.bitbucket-jira:branch-list-jira-issues"][0]?.key;
+      if (!ticketId) {
+        continue;
+      }
+      const ticketHeading = await getTicketHeading(ticketId)
+      message += ` - ${ticketId}: ${ticketHeading} :waiting::\n`;
     }
 
     console.log(message)

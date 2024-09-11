@@ -332,3 +332,269 @@ export interface Links12 {
 export interface Self12 {
   href: string
 }
+
+export interface BranchResponse {
+  size: number
+  limit: number
+  isLastPage: boolean
+  values: Branch[]
+  start: number
+  nextPageStart: number
+}
+
+export interface Branch {
+  id: string
+  displayId: string
+  type: string
+  latestCommit: string
+  latestChangeset: string
+  isDefault: boolean
+  metadata: Metadata
+}
+
+export interface Metadata {
+  "com.atlassian.bitbucket.server.bitbucket-jira:branch-list-jira-issues": Issue[]
+  "ch.mibex.stash.sonar4stash:sonar4stash-branch-qg-status-provider": string
+  "com.atlassian.bitbucket.server.bitbucket-branch:ahead-behind-metadata-provider": ComAtlassianBitbucketServerBitbucketBranchAheadBehindMetadataProvider
+  "com.atlassian.bitbucket.server.bitbucket-branch:latest-commit-metadata": ComAtlassianBitbucketServerBitbucketBranchLatestCommitMetadata
+  "com.atlassian.bitbucket.server.bitbucket-build:build-status-metadata": ComAtlassianBitbucketServerBitbucketBuildBuildStatusMetadata
+  "com.atlassian.bitbucket.server.bitbucket-ref-metadata:outgoing-pull-request-metadata"?: ComAtlassianBitbucketServerBitbucketRefMetadataOutgoingPullRequestMetadata
+}
+
+export interface Issue {
+  key: string
+  url: string
+}
+
+export interface ComAtlassianBitbucketServerBitbucketBranchAheadBehindMetadataProvider {
+  ahead: number
+  behind: number
+}
+
+export interface ComAtlassianBitbucketServerBitbucketBranchLatestCommitMetadata {
+  id: string
+  displayId: string
+  author: Author
+  authorTimestamp: number
+  committer: Committer
+  committerTimestamp: number
+  message: string
+  parents: Parent[]
+  properties: Properties
+}
+
+export interface Author {
+  name: string
+  emailAddress: string
+  id: number
+  displayName: string
+  active: boolean
+  slug: string
+  type: string
+  links: Links
+  avatarUrl: string
+}
+
+export interface Links {
+  self: Self[]
+}
+
+export interface Self {
+  href: string
+}
+
+export interface Committer {
+  name: string
+  emailAddress: string
+  id: number
+  displayName: string
+  active: boolean
+  slug: string
+  type: string
+  links: Links2
+  avatarUrl: string
+}
+
+export interface Links2 {
+  self: Self2[]
+}
+
+export interface Self2 {
+  href: string
+}
+
+export interface Parent {
+  id: string
+  displayId: string
+}
+
+export interface Properties {
+  "jira-key": string[]
+}
+
+export interface ComAtlassianBitbucketServerBitbucketBuildBuildStatusMetadata {
+  successful: number
+  inProgress: number
+  failed: number
+}
+
+export interface ComAtlassianBitbucketServerBitbucketRefMetadataOutgoingPullRequestMetadata {
+  pullRequest: PullRequest2
+}
+
+export interface PullRequest2 {
+  id: number
+  version: number
+  title: string
+  state: string
+  open: boolean
+  closed: boolean
+  createdDate: number
+  updatedDate: number
+  fromRef: FromRef
+  toRef: ToRef
+  locked: boolean
+  author: Author2
+  reviewers: Reviewer[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  participants: any[]
+}
+
+export interface FromRef {
+  id: string
+  displayId: string
+  latestCommit: string
+  type: string
+  repository: Repository
+}
+
+export interface Repository {
+  slug: string
+  id: number
+  name: string
+  hierarchyId: string
+  scmId: string
+  state: string
+  statusMessage: string
+  forkable: boolean
+  origin: Origin
+  project: Project2
+  public: boolean
+}
+
+export interface Origin {
+  slug: string
+  id: number
+  name: string
+  hierarchyId: string
+  scmId: string
+  state: string
+  statusMessage: string
+  forkable: boolean
+  project: Project
+  public: boolean
+}
+
+export interface Project {
+  key: string
+  id: number
+  name: string
+  description: string
+  public: boolean
+  type: string
+}
+
+export interface Project2 {
+  key: string
+  id: number
+  name: string
+  public: boolean
+  type: string
+}
+
+export interface ToRef {
+  id: string
+  displayId: string
+  latestCommit: string
+  type: string
+  repository: Repository2
+}
+
+export interface Repository2 {
+  slug: string
+  id: number
+  name: string
+  hierarchyId: string
+  scmId: string
+  state: string
+  statusMessage: string
+  forkable: boolean
+  origin: Origin2
+  project: Project4
+  public: boolean
+}
+
+export interface Origin2 {
+  slug: string
+  id: number
+  name: string
+  hierarchyId: string
+  scmId: string
+  state: string
+  statusMessage: string
+  forkable: boolean
+  project: Project3
+  public: boolean
+}
+
+export interface Project3 {
+  key: string
+  id: number
+  name: string
+  description: string
+  public: boolean
+  type: string
+}
+
+export interface Project4 {
+  key: string
+  id: number
+  name: string
+  public: boolean
+  type: string
+}
+
+export interface Author2 {
+  user: User
+  role: string
+  approved: boolean
+  status: string
+}
+
+export interface User {
+  name: string
+  emailAddress: string
+  id: number
+  displayName: string
+  active: boolean
+  slug: string
+  type: string
+}
+
+export interface Reviewer {
+  user: User2
+  lastReviewedCommit?: string
+  role: string
+  approved: boolean
+  status: string
+}
+
+export interface User2 {
+  name: string
+  emailAddress: string
+  id: number
+  displayName: string
+  active: boolean
+  slug: string
+  type: string
+}
